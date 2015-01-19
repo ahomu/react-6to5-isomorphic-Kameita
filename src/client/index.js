@@ -3,17 +3,11 @@
 'use strict';
 
 require('6to5/runtime');
-require('6to5/browser-polyfill');
+require('6to5/polyfill');
 
-var react = require('react');
+document.addEventListener('DOMContentLoaded', function() {
+  let React = require('react');
+  let Test = require('../components/test');
 
-module.exports = react.createClass({
-  displayName: 'hoge',
-  render: function() {
-    return <div>Hello {this.props.name}</div>;
-  }
+  React.render(<Test name="John" />, document.getElementById('mount'));
 });
-
-function foo(): number {
-  return 123;
-}

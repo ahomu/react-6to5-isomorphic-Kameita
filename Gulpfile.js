@@ -1,17 +1,22 @@
 var gulp     = require('gulp');
 var plumber  = require('gulp-plumber');
-var sequence = require('run-sequence').use(gulp);
-var rimraf   = require('rimraf');
+var filter   = require('gulp-filter');
 var package  = require('./package.json');
-var banner   = '/*! <%= name %> - v<%= version %> */'
-var lazypipe = require('lazypipe');
+var banner   = '/*! <%= name %> - v<%= version %> */';
+//var sequence = require('run-sequence').use(gulp);
+//var rimraf   = require('rimraf');
+//var lazypipe = require('lazypipe');
 
-var GLOB_SERVER_SRC        = './src/server/**/*.js';
-var DIR_SERVER_RUNNABLE    = './dist/server-compiled';
+var GLOB_SERVER_SRC        = './src/server/**/*';
+var DIR_SERVER_COMPILED    = './dist/server';
 
-var GLOB_CLIENT_SRC        = './src/client/**/*.js';
-var DIR_CLIENT             = './src/client';
-var DIR_CLIENT_PUBLIC      = './dist/client-public';
+var GLOB_COMPONENTS_SRC     = './src/components/**/*';
+var DIR_COMPONENTS_COMPILED = './dist/components';
+
+var GLOB_CLIENT_SRC        = './src/client/**/*';
+var DIR_CLIENT_PUBLIC      = './dist/client';
+
+var FILE_BROWSERIFY_INDEX  = './src/client/index.js';
 
 /**
  * Flow type
@@ -54,7 +59,7 @@ gulp.task('compile:client', function() {
   var exportName = package.name.replace('-', '');
   var fileName   = package.name.toLocaleLowerCase();
 
-  return gulp.src(DIR_CLIENT + '/index.js')
+  return gulp.src(FILE_BROWSERIFY_INDEX)
     .pipe(bufferedBrowserify(exportName))
     .pipe(header(banner, {name: fileName, version: package.version}))
     .pipe(rename(fileName + '.js'))
@@ -67,15 +72,34 @@ gulp.task('compile:client', function() {
     .pipe(gulp.dest(DIR_CLIENT_PUBLIC))
 });
 
-gulp.task('compile:server', function() {
+gulp.task('compile:components', function() {
   var to5     = require('gulp-6to5');
+  var jsFilter = filter('**/*.js');
 
-  return gulp.src(GLOB_SERVER_SRC)
+  return gulp.src(GLOB_COMPONENTS_SRC)
+    .pipe(jsFilter)
+    .pipe(plumber())
     .pipe(to5({
       experimental : false,
       runtime      : true
     }))
-    .pipe(gulp.dest(DIR_SERVER_RUNNABLE));
+    .pipe(jsFilter.restore())
+    .pipe(gulp.dest(DIR_COMPONENTS_COMPILED));
+});
+
+gulp.task('compile:server', function() {
+  var to5     = require('gulp-6to5');
+  var jsFilter = filter('**/*.js');
+
+  return gulp.src(GLOB_SERVER_SRC)
+    .pipe(jsFilter)
+    .pipe(plumber())
+    .pipe(to5({
+      experimental : false,
+      runtime      : true
+    }))
+    .pipe(jsFilter.restore())
+    .pipe(gulp.dest(DIR_SERVER_COMPILED));
 });
 
 /**
@@ -90,7 +114,7 @@ gulp.task('build:client', function() {
 });
 
 gulp.task('build:server', function() {
-  gulp.start('flow:server', 'compile:server');
+  gulp.start('flow:server', 'compile:server', 'compile:components');
 });
 
 gulp.task('watch', function() {
@@ -101,6 +125,10 @@ gulp.task('watch', function() {
 
   gulp.watch(GLOB_SERVER_SRC, function() {
     gulp.start('build:server');
+  });
+
+  gulp.watch(GLOB_COMPONENTS_SRC, function() {
+    gulp.start('build:server', 'build:client');
   });
 
 });
@@ -136,13 +164,12 @@ function bufferedBrowserify(standaloneName) {
 
   return transform(function(filename) {
     return browserify(filename, {
-      standalone : standaloneName,
-      debug      : true,
-      noParse    : [
-        require.resolve('6to5/runtime'),
-        require.resolve('6to5/browser-polyfill'),
-        require.resolve('react/react')]
-    })
+        standalone : standaloneName,
+        debug      : true,
+        noParse    : [
+          require.resolve('6to5/runtime'),
+          require.resolve('6to5/browser-polyfill')]
+      })
       .transform(to5ify.configure({
         experimental : false,
         runtime      : true
