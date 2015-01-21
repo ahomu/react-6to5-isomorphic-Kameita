@@ -1,9 +1,8 @@
 <html>
 <body>
 <h1>Test isomorphic</h1>
-{{{content$}}}
-
-<div id="mount"></div>
+<div id="content">{{{content$}}}</div>
+<script id="initializer" data-root-component="{{{root$}}}" type="text/plain">{{{props$}}}</script>
 <script src="/flow-6to5-isomorphic-kameita.js"></script>
 </body>
 </html>

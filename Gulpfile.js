@@ -109,6 +109,7 @@ gulp.task('pretest', function() {
 
 function bufferedBrowserify(standaloneName) {
   var transform  = require('vinyl-transform');
+  var globify    = require('require-globify');
   var browserify = require('browserify');
   var to5ify     = require('6to5ify');
 
@@ -125,6 +126,7 @@ function bufferedBrowserify(standaloneName) {
         experimental : false,
         runtime      : true
       }))
+      .transform(globify)
       .bundle()
       .on('error', function(err){
         console.error(err.message);

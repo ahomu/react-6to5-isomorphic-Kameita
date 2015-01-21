@@ -3,7 +3,9 @@
 'use strict';
 
 const DEFAULT_LAYOUT_NAME = 'layout';
-const INJECT_CONTENT_NAME = 'content$';
+const VAR_INJECT_CONTENT  = 'content$';
+const VAR_INJECT_PROPS    = 'props$';
+const VAR_ROOT_COMPONENT  = 'root$';
 
 let React = require('react');
 
@@ -13,16 +15,18 @@ module.exports = function() {
     res.render = function() {
 
       let [componentName, data] = arguments;
-      let RootComponent, rootElement;
+      let RootComponent, RootFactory;
 
       try {
-        RootComponent = require('../../components/' + componentName + '.js');
+        RootComponent = require(`../../components/${componentName}.js`);
+        RootFactory   = React.createFactory(RootComponent);
       } catch(e) {
         next(e);
       }
 
-      rootElement = RootComponent(data);
-      data[INJECT_CONTENT_NAME] = React.renderComponentToString(rootElement);
+      data[VAR_INJECT_PROPS]   = JSON.stringify(data);
+      data[VAR_INJECT_CONTENT] = React.renderToString(RootFactory(data));
+      data[VAR_ROOT_COMPONENT] = componentName;
 
       arguments[0] = DEFAULT_LAYOUT_NAME;
       arguments[1] = data;

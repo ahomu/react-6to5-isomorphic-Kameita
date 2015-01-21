@@ -3,13 +3,16 @@
 let React = require('react');
 let Test2 = require('./test2');
 
-module.exports = React.createClass({
+let Test = React.createClass({
   render() {
     return (
       <div>
-        <h1>test component</h1>
+        <h1 id="hoge">test component</h1>
+        <p>{this.props.foo}</p>
         <Test2 />
       </div>
     )
   }
 });
+
+module.exports = Test;
