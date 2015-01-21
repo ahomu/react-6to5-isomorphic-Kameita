@@ -1,5 +1,5 @@
 {
-  "name": "flow-6to5-isomorphic-kameita",
+  "name": "react-6to5-isomorphic-kameita",
   "version": "0.1.0",
   "description": "",
   "main": "index.js",
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ahomu/flow-6to5-kameita"
+    "url": "https://github.com/ahomu/react-6to5-isomorphic-kameita"
   },
   "author": "ahomu",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ahomu/flow-6to5-kameita/issues"
+    "url": "https://github.com/ahomu/react-6to5-isomorphic-kameita/issues"
   },
-  "homepage": "https://github.com/ahomu/flow-6to5-kameita",
+  "homepage": "https://github.com/ahomu/react-6to5-isomorphic-kameita",
   "devDependencies": {
     "6to5ify": "~3.1.0",
     "browserify": "~6.3.3",
@@ -31,7 +31,6 @@
     "gulp-debug": "~1.0.1",
     "gulp-espower": "^0.10.0",
     "gulp-filter": "^2.0.0",
-    "gulp-flowtype": "~0.4.0",
     "gulp-header": "~1.2.2",
     "gulp-jshint": "~1.9.0",
     "gulp-plumber": "~0.6.6",

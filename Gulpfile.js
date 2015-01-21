@@ -3,9 +3,6 @@ var plumber  = require('gulp-plumber');
 var filter   = require('gulp-filter');
 var package  = require('./package.json');
 var banner   = '/*! <%= name %> - v<%= version %> */';
-//var sequence = require('run-sequence').use(gulp);
-//var rimraf   = require('rimraf');
-//var lazypipe = require('lazypipe');
 
 var GLOB_SERVER_SRC        = './src/server/**/*';
 var DIR_SERVER_COMPILED    = './dist/server';
@@ -17,37 +14,6 @@ var GLOB_CLIENT_SRC        = './src/client/**/*';
 var DIR_CLIENT_PUBLIC      = './dist/client';
 
 var FILE_BROWSERIFY_INDEX  = './src/client/index.js';
-
-/**
- * Flow type
- */
-gulp.task('flow:client', function() {
-  var flow  = require('gulp-flowtype');
-
-  return gulp.src(GLOB_CLIENT_SRC)
-    .pipe(plumber())
-    .pipe(flow({
-      all: false,
-      weak: false,
-      declarations: './declarations',
-      killFlow: false,
-      beep: true
-    }));
-});
-
-gulp.task('flow:server', function() {
-  var flow  = require('gulp-flowtype');
-
-  return gulp.src(GLOB_SERVER_SRC)
-    .pipe(plumber())
-    .pipe(flow({
-      all: false,
-      weak: false,
-      declarations: './declarations',
-      killFlow: false,
-      beep: true
-    }));
-});
 
 /**
  * Compile ES6 -> ES5.1
@@ -110,11 +76,11 @@ gulp.task('build', function() {
 });
 
 gulp.task('build:client', function() {
-  gulp.start('flow:client', 'compile:client');
+  gulp.start('compile:client');
 });
 
 gulp.task('build:server', function() {
-  gulp.start('flow:server', 'compile:server', 'compile:components');
+  gulp.start('compile:server', 'compile:components');
 });
 
 gulp.task('watch', function() {
@@ -136,22 +102,6 @@ gulp.task('watch', function() {
 /**
  * Utilities
  */
-gulp.task('flowconfig:update', function(done) {
-  var fs = require('fs');
-  var dependencies = Object.keys(package.devDependencies);
-  var ignorePaths = dependencies.map(function(d) {
-    return '.*/node_modules/' + d + '/.*'
-  });
-
-  fs.readFile('./flowconfig.tmpl', {encoding: 'utf8'}, function (err, data) {
-    if (err) {
-      throw err;
-    }
-    var content = data.replace('{% devDependencies %}', ignorePaths.join('\n'));
-    fs.writeFile('./.flowconfig', content, done);
-  });
-});
-
 gulp.task('pretest', function() {
   gulp.start('build:client', 'build:test-client');
 });
@@ -168,7 +118,8 @@ function bufferedBrowserify(standaloneName) {
         debug      : true,
         noParse    : [
           require.resolve('6to5/runtime'),
-          require.resolve('6to5/browser-polyfill')]
+          require.resolve('6to5/browser-polyfill')
+        ]
       })
       .transform(to5ify.configure({
         experimental : false,

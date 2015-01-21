@@ -1,4 +1,4 @@
-Flow & 6to5 client-server isomorphic project template
+React & 6to5 client-server isomorphic project template
 ====================
 
 [![Licence](http://img.shields.io/badge/license-MIT-000000.svg?style=flat-square)](https://npmjs.org/package/flow-6to5-isomorphic-kameita)
@@ -56,7 +56,7 @@ Initial setting is for browser, please following steps if you want to use in the
 
 ## Using libraries
 
-- [facebook/flow](https://github.com/facebook/flow)
+- [facebook/react](https://github.com/facebook/react)
 - [6to5/6to5](https://github.com/6to5/6to5)
 - [substack/node-browserify](https://github.com/substack/node-browserify)
 - [gulpjs/gulp](https://github.com/gulpjs/gulp/)
